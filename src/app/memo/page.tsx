@@ -1,4 +1,6 @@
 import React from 'react';
+import UserAvatar from '../components/UserAvatar';
+import { SignOut } from '../components/signout-button';
 
 export default function Memo() {
   return (
@@ -17,7 +19,9 @@ export default function Memo() {
         >
           add
         </button>
+        <UserAvatar />
       </form>
+      <SignOut />
       <ul>
         {Array.from({ length: 10 }).map((_, i) => (
           <li
