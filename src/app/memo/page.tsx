@@ -17,7 +17,7 @@ export default async function Memo() {
     );
   }
   return (
-    <div className="md:container md:max-w-screen-md p-4">
+    <div className="md:container md:max-w-screen-md p-4 mx-auto">
       <header className="flex items-center justify-between mb-4">
         <form
           action=""
