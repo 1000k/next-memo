@@ -2,7 +2,7 @@ import React from 'react';
 import UserAvatar from '@/app/components/UserAvatar';
 import { SignOut } from '@/app/components/signout-button';
 import SignIn from '@/app/components/sign-in';
-import { auth } from '@/../auth';
+import { auth } from '@/auth';
 
 export default async function Memo() {
   const session = await auth();
