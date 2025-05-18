@@ -1,8 +1,11 @@
 import React from 'react';
 import UserAvatar from '@/app/components/UserAvatar';
 import { SignOut } from '@/app/components/signout-button';
+import { prisma } from '@/lib/prisma';
 
 export default async function Memo() {
+  const memos = await prisma.memo.findMany();
+  console.log(memos);
   return (
     <div className="md:container md:max-w-screen-md p-4 mx-auto">
       <header className="flex items-center justify-between mb-4">
