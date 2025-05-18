@@ -1,8 +1,21 @@
 import React from 'react';
-import UserAvatar from '../components/UserAvatar';
-import { SignOut } from '../components/signout-button';
+import UserAvatar from '@/app/components/UserAvatar';
+import { SignOut } from '@/app/components/signout-button';
+import SignIn from '@/app/components/sign-in';
+import { auth } from '@/../auth';
 
-export default function Memo() {
+export default async function Memo() {
+  const session = await auth();
+  if (!session) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full min-h-svh">
+        <h1 className="text-2xl">Please sign in to view this page</h1>
+        <div className="mt-4">
+          <SignIn />
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="md:container md:max-w-screen-md p-4">
       <header className="flex items-center justify-between mb-4">
