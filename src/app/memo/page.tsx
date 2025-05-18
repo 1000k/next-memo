@@ -2,18 +2,18 @@ import React from 'react';
 
 export default function Memo() {
   return (
-    <div className="flex flex-col h-screen">
+    <div className="md:container md:max-w-screen-md p-4">
       <form action="">
         <input
           id="memo"
           type="text"
           placeholder="Input your memo here..."
-          className="border-2 border-gray-300 rounded-md p-2 mb-4"
+          className="border-2 border-gray-300 rounded-md p-2 mb-4 w-8/12"
           required
         />
         <button
           type="submit"
-          className="bg-blue-500 text-white rounded-md p-2 hover:bg-blue-600"
+          className="bg-blue-500 text-white rounded-md p-2 ml-4 hover:bg-blue-600"
         >
           add
         </button>
