@@ -3,4 +3,17 @@ import Google from 'next-auth/providers/google';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Google],
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        // This is the first time the user is signing in
+        token.id = user.id;
+      }
+      return token;
+    },
+    // session({ session, token }) {
+    //   session.user.id = token.id;
+    //   return session;
+    // },
+  },
 });
