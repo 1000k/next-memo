@@ -1,0 +1,11 @@
+-- CreateTable
+CREATE TABLE "Memo" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "completed" BOOLEAN NOT NULL DEFAULT false,
+    "cleatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Memo_pkey" PRIMARY KEY ("id")
+);
