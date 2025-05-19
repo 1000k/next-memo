@@ -13,21 +13,35 @@ export async function findById(id: number) {
   return result;
 }
 
-export async function create(formData: FormData) {
+export async function create(
+  prevState: { message: string },
+  formData: FormData
+) {
   const session = await auth();
+  const externalUserId = session?.user?.externalUserId;
 
-  if (!session?.user?.externalUserId) {
+  if (!externalUserId) {
     throw new Error('User not found');
   }
 
-  await prisma.memo.create({
-    data: {
-      title: formData.get('title') as string,
-      externalUserId: session.user.externalUserId,
-    },
-  });
+  try {
+    await prisma.memo.create({
+      data: {
+        title: formData.get('title') as string,
+        externalUserId: externalUserId,
+      },
+    });
 
-  revalidatePath('/memo');
+    revalidatePath('/memo');
+    return {
+      message: 'Memo created successfully',
+    };
+  } catch (error) {
+    console.error('Error creating memo:', error);
+    return {
+      message: 'Error creating memo',
+    };
+  }
 }
 
 export async function update(formData: FormData) {
