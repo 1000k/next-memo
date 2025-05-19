@@ -1,11 +1,24 @@
+('');
 import React from 'react';
 import UserAvatar from '@/app/components/UserAvatar';
 import { SignOut } from '@/app/components/signout-button';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/auth';
 
 export default async function Memo() {
-  const memos = await prisma.memo.findMany();
+  const session = await auth();
+  console.log(session);
+
+  const memos = await prisma.memo.findMany({
+    where: {
+      userId: session?.user.id,
+    },
+    orderBy: {
+      updatedAt: 'desc',
+    },
+  });
   console.log(memos);
+
   return (
     <div className="md:container md:max-w-screen-md p-4 mx-auto">
       <header className="flex items-center justify-between mb-4">
@@ -34,12 +47,12 @@ export default async function Memo() {
       </header>
 
       <ul>
-        {Array.from({ length: 10 }).map((_, i) => (
+        {memos.map((memo) => (
           <li
-            key={i}
+            key={memo.id}
             className="flex items-center justify-between mb-2"
           >
-            <span className="text-left">memo</span>
+            <span className="text-left">{memo.title}</span>
             <div className="flex gap-2">
               <button className="px-2 py-1 bg-yellow-700 rounded hover:bg-yellow-500">
                 edit

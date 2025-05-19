@@ -11,9 +11,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return token;
     },
-    // session({ session, token }) {
-    //   session.user.id = token.id;
-    //   return session;
-    // },
+    session({ session, token }) {
+      // console.log('Session callback', { session, token });
+      // Set provider-specific ID on the session object
+      (session.user as { id?: string }).id = token.id as string;
+      return session;
+    },
   },
 });
