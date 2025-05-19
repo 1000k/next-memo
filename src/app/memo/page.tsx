@@ -1,9 +1,8 @@
-('');
-import React from 'react';
 import UserAvatar from '@/app/components/UserAvatar';
 import { SignOut } from '@/app/components/signout-button';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import { createMemo } from '@/actions/actions';
 
 export default async function Memo() {
   const session = await auth();
@@ -23,11 +22,12 @@ export default async function Memo() {
     <div className="md:container md:max-w-screen-md p-4 mx-auto">
       <header className="flex items-center justify-between mb-4">
         <form
-          action=""
+          action={createMemo}
           className="flex w-2/3 items-center"
         >
           <input
-            id="memo"
+            id="title"
+            name="title"
             type="text"
             placeholder="Input your memo here..."
             className="border-2 border-gray-300 rounded-md p-2 w-full"
