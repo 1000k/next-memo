@@ -4,6 +4,13 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 
+// Extend the User type to include externalUserId
+declare module 'next-auth' {
+  interface User {
+    externalUserId?: string;
+  }
+}
+
 export async function findById(id: number) {
   const result = await prisma.memo.findUnique({
     where: {
@@ -60,10 +67,10 @@ export async function update(formData: FormData) {
 
   await prisma.memo.update({
     where: {
-      id: Number(formData.get('id')) as unknown as number,
+      id: Number(formData.get('id')),
     },
     data: {
-      title: formData.get('title') as string,
+      title: (formData.get('title') as string) ?? '',
       updatedAt: new Date(),
     },
   });

@@ -3,7 +3,7 @@ import { SignOut } from '@/app/components/signout-button';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import MemoList from '@/app/components/MemoList';
-import MemoAdd from '../components/MemoAdd';
+import MemoAdd from '@/app/components/MemoAdd';
 
 export default async function Memo() {
   const session = await auth();
@@ -11,7 +11,7 @@ export default async function Memo() {
 
   const memos = await prisma.memo.findMany({
     where: {
-      externalUserId: session?.user.externalUserId,
+      externalUserId: session?.user?.externalUserId,
     },
     orderBy: {
       updatedAt: 'desc',
