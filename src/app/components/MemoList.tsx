@@ -21,7 +21,11 @@ export default function MemoList({ memos }: { memos: Memo[] }) {
     setEditingId(null);
   };
 
-  return (
+  return memos.length === 0 ? (
+    <div className="text-center text-gray-500 justify-center items-center flex flex-col h-96">
+      No memos available. Please add a memo.
+    </div>
+  ) : (
     <ul>
       {memos.map((memo) => (
         <li
