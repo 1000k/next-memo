@@ -2,8 +2,9 @@
 
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import { revalidatePath } from 'next/cache';
 
-export async function createMemo(formData: FormData) {
+export async function create(formData: FormData) {
   const session = await auth();
 
   await prisma.memo.create({
@@ -12,4 +13,6 @@ export async function createMemo(formData: FormData) {
       userId: session?.user.id,
     },
   });
+
+  revalidatePath('/memo');
 }

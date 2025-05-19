@@ -2,7 +2,7 @@ import UserAvatar from '@/app/components/UserAvatar';
 import { SignOut } from '@/app/components/signout-button';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
-import { createMemo } from '@/actions/actions';
+import { create } from '@/actions/actions';
 
 export default async function Memo() {
   const session = await auth();
@@ -22,7 +22,7 @@ export default async function Memo() {
     <div className="md:container md:max-w-screen-md p-4 mx-auto">
       <header className="flex items-center justify-between mb-4">
         <form
-          action={createMemo}
+          action={create}
           className="flex w-2/3 items-center"
         >
           <input
