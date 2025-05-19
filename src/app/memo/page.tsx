@@ -3,6 +3,7 @@ import { SignOut } from '@/app/components/signout-button';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { create } from '@/actions/actions';
+import MemoList from '@/app/components/MemoList';
 
 export default async function Memo() {
   const session = await auth();
@@ -45,25 +46,7 @@ export default async function Memo() {
           <SignOut />
         </div>
       </header>
-
-      <ul>
-        {memos.map((memo) => (
-          <li
-            key={memo.id}
-            className="flex items-center justify-between mb-2"
-          >
-            <span className="text-left">{memo.title}</span>
-            <div className="flex gap-2">
-              <button className="px-2 py-1 bg-yellow-700 rounded hover:bg-yellow-500">
-                edit
-              </button>
-              <button className="px-2 py-1 bg-red-700 rounded hover:bg-red-500">
-                delete
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <MemoList memos={memos} />
     </div>
   );
 }
