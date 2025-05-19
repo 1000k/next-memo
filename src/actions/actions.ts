@@ -16,14 +16,14 @@ export async function findById(id: number) {
 export async function create(formData: FormData) {
   const session = await auth();
 
-  if (!session?.user?.id) {
+  if (!session?.user?.externalUserId) {
     throw new Error('User not found');
   }
 
   await prisma.memo.create({
     data: {
       title: formData.get('title') as string,
-      userId: session.user.id,
+      externalUserId: session.user.externalUserId,
     },
   });
 
@@ -40,7 +40,7 @@ export async function update(formData: FormData) {
   if (!session?.user) {
     throw new Error('User not found');
   }
-  if (oldMemo.userId !== session?.user.id) {
+  if (oldMemo.externalUserId !== session?.user.externalUserId) {
     throw new Error('You are not authorized to update this memo');
   }
 
@@ -64,10 +64,10 @@ export async function deleteMemo(id: number) {
   if (!oldMemo) {
     throw new Error('Memo not found');
   }
-  if (!session?.user) {
+  if (!session?.user?.externalUserId) {
     throw new Error('User not found');
   }
-  if (oldMemo.userId !== session?.user.id) {
+  if (oldMemo.externalUserId !== session?.user.externalUserId) {
     throw new Error('You are not authorized to delete this memo');
   }
 

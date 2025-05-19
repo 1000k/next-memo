@@ -7,11 +7,11 @@ import MemoList from '@/app/components/MemoList';
 
 export default async function Memo() {
   const session = await auth();
-  console.log(session);
+  console.log('Memo > session: ', session);
 
   const memos = await prisma.memo.findMany({
     where: {
-      userId: session?.user.id,
+      externalUserId: session?.user.externalUserId,
     },
     orderBy: {
       updatedAt: 'desc',
