@@ -91,9 +91,9 @@ export default function MemoItem({ memo }: { memo: Memo }) {
   }
 
   return (
-    <>
+    <div className="flex justify-between items-center w-full">
       <span className="text-left">{memo.title}</span>
-      <div className="flex gap-2">
+      <div className="flex gap-2 ml-auto">
         <button
           className="px-2 py-1 rounded-2xl text-gray-500 hover:text-white "
           onClick={startEditing}
@@ -128,6 +128,6 @@ export default function MemoItem({ memo }: { memo: Memo }) {
           </svg>
         </button>
       </div>
-    </>
+    </div>
   );
 } 
