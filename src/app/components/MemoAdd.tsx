@@ -2,6 +2,7 @@
 
 import { create } from '@/actions/actions';
 import { useActionState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const initialState = {
   message: '',
@@ -9,10 +10,29 @@ const initialState = {
 
 export default function MemoAdd() {
   const [state, formAction, isPending] = useActionState(create, initialState);
+  const router = useRouter();
+
+  // Server Actionをラップした関数
+  async function handleSubmit(formData: FormData) {
+    await create(initialState, formData);
+    
+    // フォームをリセット
+    const formElement = document.querySelector('form') as HTMLFormElement;
+    if (formElement) {
+      formElement.reset();
+    }
+    
+    // ページを再検証して最新のデータを取得
+    router.refresh();
+    
+    // カスタムイベントを発火して新しいメモが追加されたことを通知
+    const event = new CustomEvent('memo-added', { bubbles: true });
+    document.dispatchEvent(event);
+  }
 
   return (
     <form
-      action={formAction}
+      action={handleSubmit}
       className="flex w-2/3 items-center"
     >
       <input
