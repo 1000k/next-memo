@@ -39,9 +39,9 @@ export async function create(
       },
       data: {
         order: {
-          increment: 1
-        }
-      }
+          increment: 1,
+        },
+      },
     });
 
     // 新しいメモを作成（orderは0で一番上に表示）
@@ -115,25 +115,22 @@ export async function deleteMemo(id: number) {
 }
 
 // New action to update memo order
-export async function updateMemoOrder(items: { id: number, order: number }[]) {
+export async function updateMemoOrder(items: { id: number; order: number }[]) {
   const session = await auth();
-  
+
   if (!session?.user?.externalUserId) {
     throw new Error('User not found');
   }
-  
-  // For each item, update its order
-  const updatePromises = items.map(item => 
-    prisma.memo.update({
-      where: {
-        id: item.id,
-      },
-      data: {
-        order: item.order,
-      },
-    })
+
+  // トランザクションを使用して一括更新
+  await prisma.$transaction(
+    items.map((item) =>
+      prisma.memo.update({
+        where: { id: item.id },
+        data: { order: item.order },
+      })
+    )
   );
-  
-  await Promise.all(updatePromises);
+
   revalidatePath('/');
 }
