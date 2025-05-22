@@ -65,22 +65,20 @@ export default function MemoList({ memos }: { memos: Memo[] }) {
     const { active, over } = event;
     
     if (over && active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.findIndex(item => item.id === active.id);
-        const newIndex = items.findIndex(item => item.id === over.id);
-        
-        const newItems = arrayMove(items, oldIndex, newIndex);
-        
-        // Update order in database
-        const updatedIds = newItems.map((item, index) => ({
-          id: item.id,
-          order: index,
-        }));
-        
-        updateMemoOrder(updatedIds);
-        
-        return newItems;
-      });
+      const oldIndex = items.findIndex(item => item.id === active.id);
+      const newIndex = items.findIndex(item => item.id === over.id);
+      
+      const newItems = arrayMove(items, oldIndex, newIndex);
+      
+      // Update order in database after state update
+      const updatedIds = newItems.map((item, index) => ({
+        id: item.id,
+        order: index,
+      }));
+      
+      setItems(newItems);
+      // Move server action outside of state setter
+      updateMemoOrder(updatedIds);
     }
   };
 
