@@ -4,6 +4,7 @@ import { create } from '@/actions/actions';
 import { useActionState } from 'react';
 import { useRouter } from 'next/navigation';
 import { EditIcon } from '@/components/icons';
+import { useRef } from 'react';
 
 const initialState = {
   message: '',
@@ -12,27 +13,30 @@ const initialState = {
 export default function MemoAdd() {
   const [state, , isPending] = useActionState(create, initialState);
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
 
-  // Server Actionをラップした関数
-  async function handleSubmit(formData: FormData) {
-    await create(initialState, formData);
-
-    // フォームをリセット
-    const formElement = document.querySelector('form') as HTMLFormElement;
-    if (formElement) {
-      formElement.reset();
+  const resetForm = () => {
+    if (formRef.current) {
+      formRef.current.reset();
     }
+  };
 
-    // ページを再検証して最新のデータを取得
-    router.refresh();
-
-    // カスタムイベントを発火して新しいメモが追加されたことを通知
+  const notifyMemoAdded = () => {
     const event = new CustomEvent('memo-added', { bubbles: true });
     document.dispatchEvent(event);
+  };
+
+  // Server Action wrapper
+  async function handleSubmit(formData: FormData) {
+    await create(initialState, formData);
+    resetForm();
+    router.refresh();
+    notifyMemoAdded();
   }
 
   return (
     <form
+      ref={formRef}
       action={handleSubmit}
       className="flex w-2/3 items-center"
     >
