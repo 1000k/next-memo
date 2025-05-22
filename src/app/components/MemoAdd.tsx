@@ -9,7 +9,7 @@ const initialState = {
 };
 
 export default function MemoAdd() {
-  const [state, formAction, isPending] = useActionState(create, initialState);
+  const [state, , isPending] = useActionState(create, initialState);
   const router = useRouter();
 
   // Server Actionをラップした関数
