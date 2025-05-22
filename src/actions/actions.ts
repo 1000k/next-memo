@@ -57,7 +57,6 @@ export async function create(
   prevState: { message: string },
   formData: FormData
 ): Promise<ActionResponse> {
-  await new Promise((resolve) => setTimeout(resolve, 2000)); // for testing
   try {
     const { externalUserId } = await authorizeUser();
     const title = formData.get('title') as string;
