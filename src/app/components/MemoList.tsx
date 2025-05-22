@@ -15,7 +15,7 @@ export default function MemoList({ memos }: { memos: Memo[] }) {
       {memos.map((memo) => (
         <li
           key={memo.id}
-          className="flex items-center justify-between mb-2"
+          className="flex items-center justify-between mb-2 border border-gray-700 p-2 rounded-lg hover:bg-gray-800 transition-colors duration-100 hover:shadow-gray-700"
         >
           <MemoItem memo={memo} />
         </li>

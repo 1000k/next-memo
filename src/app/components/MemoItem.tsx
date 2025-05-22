@@ -48,7 +48,7 @@ export default function MemoItem({ memo }: { memo: Memo }) {
         />
         <div className="flex gap-2">
           <button
-            className="px-2 py-1 rounded-2xl text-gray-400 hover:text-white hover:bg-gray-700"
+            className="px-2 py-1 rounded-2xl text-gray-400 hover:text-white "
             type="submit"
           >
             <svg
@@ -66,7 +66,7 @@ export default function MemoItem({ memo }: { memo: Memo }) {
             </svg>
           </button>
           <button
-            className="px-2 py-1 rounded-2xl text-gray-400 hover:text-white hover:bg-gray-700"
+            className="px-2 py-1 rounded-2xl text-gray-400 hover:text-white "
             onClick={cancelEditing}
             type="button"
           >
@@ -94,7 +94,7 @@ export default function MemoItem({ memo }: { memo: Memo }) {
       <span className="text-left">{memo.title}</span>
       <div className="flex gap-2">
         <button
-          className="px-2 py-1 rounded-2xl text-gray-500 hover:text-white hover:bg-gray-700"
+          className="px-2 py-1 rounded-2xl text-gray-500 hover:text-white "
           onClick={startEditing}
         >
           <svg
@@ -109,7 +109,7 @@ export default function MemoItem({ memo }: { memo: Memo }) {
           </svg>
         </button>
         <button
-          className="px-2 py-1 text-gray-500 rounded-2xl hover:bg-red-900 hover:text-white"
+          className="px-2 py-1 text-gray-500 rounded-2xl hover:text-red-500"
           onClick={() => deleteMemo(memo.id)}
         >
           <svg
