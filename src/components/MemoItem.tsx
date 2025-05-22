@@ -170,7 +170,7 @@ export default function MemoItem({ memo }: { memo: Memo }) {
   const router = useRouter();
 
   // Add useActionState for the update action
-  const [state, formAction, isUpdatePending] = useActionState(
+  const [, formAction, isUpdatePending] = useActionState(
     async (prevState: State, formData: FormData) => {
       const result = await update(formData);
       setIsEditing(false);
