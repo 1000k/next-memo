@@ -1,9 +1,9 @@
-import UserAvatar from '@/app/components/UserAvatar';
-import { SignOut } from '@/app/components/signout-button';
+import UserAvatar from '@/components/UserAvatar';
+import { SignOut } from '@/components/signout-button';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
-import MemoList from '@/app/components/MemoList';
-import MemoAdd from '@/app/components/MemoAdd';
+import MemoList from '@/components/MemoList';
+import MemoAdd from '@/components/MemoAdd';
 
 export default async function Memo() {
   const session = await auth();
