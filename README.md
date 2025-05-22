@@ -36,3 +36,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
    - Any other environment variables your app needs
 
 5. Deploy your application
+
+6. Deploy DB
+    - `dotenv -e .env.production -- npx prisma migrate deploy`
+
+7. Set environment variables in Vercel's dashboard
+    - `AUTH_SECRET, AUTH_GOOGLE_ID, AUTH_GOOGLE_SECRET`
+
+8. Update Google Auth Platform
+    - Add Vercel App's URLs to Google Auth Platform
+    - "OAuth 2.0 Client" screen -> Fill "Approved JavaScript Generator" & "Approved Redirect URI"
+        - Note: It may take from five minutes to several hours for the settings to take effect.
