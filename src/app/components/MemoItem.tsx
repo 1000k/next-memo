@@ -6,6 +6,7 @@ import { deleteMemo, update } from '@/actions/actions';
 type Memo = {
   id: number;
   title: string;
+  order?: number;
 };
 
 export default function MemoItem({ memo }: { memo: Memo }) {

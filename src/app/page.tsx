@@ -18,7 +18,7 @@ export default async function Home() {
       externalUserId: session?.user?.externalUserId,
     },
     orderBy: {
-      updatedAt: 'desc',
+      order: 'asc',
     },
   });
 
