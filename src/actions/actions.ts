@@ -39,7 +39,7 @@ export async function create(
       },
     });
 
-    revalidatePath('/memo');
+    revalidatePath('/');
     return {
       message: 'Memo created successfully',
     };
@@ -75,7 +75,7 @@ export async function update(formData: FormData) {
     },
   });
 
-  revalidatePath('/memo');
+  revalidatePath('/');
 }
 
 export async function deleteMemo(id: number) {
@@ -97,5 +97,5 @@ export async function deleteMemo(id: number) {
       id: id,
     },
   });
-  revalidatePath('/memo');
+  revalidatePath('/');
 }
