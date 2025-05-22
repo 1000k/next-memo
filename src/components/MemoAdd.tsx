@@ -3,17 +3,18 @@
 import { create } from '@/actions/actions';
 import { useActionState } from 'react';
 import { useRouter } from 'next/navigation';
-import { EditIcon } from '@/components/icons';
+import { EditIcon, LoadingSpinner } from '@/components/icons';
 import { useRef } from 'react';
 
 const initialState = {
   message: '',
 };
 
+type State = typeof initialState;
+
 export default function MemoAdd() {
-  const [state, , isPending] = useActionState(create, initialState);
-  const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
 
   const resetForm = () => {
     if (formRef.current) {
@@ -26,18 +27,22 @@ export default function MemoAdd() {
     document.dispatchEvent(event);
   };
 
-  // Server Action wrapper
-  async function handleSubmit(formData: FormData) {
-    await create(initialState, formData);
-    resetForm();
-    router.refresh();
-    notifyMemoAdded();
-  }
+  // Create a bound version of the server action that handles post-submission tasks
+  const [state, formAction, isPending] = useActionState(
+    async (prevState: State, formData: FormData) => {
+      const result = await create(prevState, formData);
+      resetForm();
+      router.refresh();
+      notifyMemoAdded();
+      return result;
+    },
+    initialState
+  );
 
   return (
     <form
       ref={formRef}
-      action={handleSubmit}
+      action={formAction}
       className="flex w-2/3 items-center"
     >
       <input
@@ -55,7 +60,7 @@ export default function MemoAdd() {
         disabled={isPending}
         aria-disabled={isPending}
       >
-        <EditIcon />
+        {isPending ? <LoadingSpinner /> : <EditIcon />}
       </button>
       <p
         aria-live="polite"
