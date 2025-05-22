@@ -14,7 +14,7 @@ declare module 'next-auth' {
 type ActionResponse = {
   success: boolean;
   message: string;
-  data?: any;
+  data?: unknown;
 };
 
 // Common function for authorization and error handling
