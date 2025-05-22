@@ -1,15 +1,37 @@
-import Link from 'next/link';
-import SignIn from '@/app/components/sign-in';
+import { redirect } from 'next/navigation';
+import { auth } from '@/auth';
+import { prisma } from '@/lib/prisma';
+import UserAvatar from '@/app/components/UserAvatar';
+import { SignOut } from '@/app/components/signout-button';
+import MemoList from '@/app/components/MemoList';
+import MemoAdd from '@/app/components/MemoAdd';
 
 export default async function Home() {
+  const session = await auth();
+  
+  if (!session) {
+    redirect('/login');
+  }
+  
+  const memos = await prisma.memo.findMany({
+    where: {
+      externalUserId: session?.user?.externalUserId,
+    },
+    orderBy: {
+      updatedAt: 'desc',
+    },
+  });
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-3xl font-bold mb-4">next-memo</h1>
-      <SignIn />
-      <Link
-        href="/memo"
-        className="text-blue-500 underline"
-      ></Link>
-    </main>
+    <div className="md:container md:max-w-screen-md p-4 mx-auto">
+      <header className="flex items-center justify-between mb-4">
+        <MemoAdd />
+        <div className="flex w-1/3 items-center justify-end gap-2">
+          <UserAvatar />
+          <SignOut />
+        </div>
+      </header>
+      <MemoList memos={memos} />
+    </div>
   );
 }
