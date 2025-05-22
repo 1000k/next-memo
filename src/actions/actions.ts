@@ -11,32 +11,59 @@ declare module 'next-auth' {
   }
 }
 
-export async function findById(id: number) {
-  const result = await prisma.memo.findUnique({
-    where: {
-      id: id,
-    },
+type ActionResponse = {
+  success: boolean;
+  message: string;
+  data?: any;
+};
+
+// Common function for authorization and error handling
+async function authorizeUser() {
+  const session = await auth();
+  const externalUserId = session?.user?.externalUserId;
+
+  if (!externalUserId) {
+    throw new Error('User not authenticated');
+  }
+
+  return { externalUserId, session };
+}
+
+async function validateMemoOwnership(memoId: number) {
+  const { externalUserId, session } = await authorizeUser();
+
+  const memo = await prisma.memo.findUnique({
+    where: { id: memoId },
   });
-  return result;
+
+  if (!memo) {
+    throw new Error('Memo not found');
+  }
+
+  if (memo.externalUserId !== externalUserId) {
+    throw new Error('You are not authorized to modify this memo');
+  }
+
+  return { memo, externalUserId, session };
+}
+
+export async function findById(id: number) {
+  return await prisma.memo.findUnique({
+    where: { id },
+  });
 }
 
 export async function create(
   prevState: { message: string },
   formData: FormData
-) {
-  const session = await auth();
-  const externalUserId = session?.user?.externalUserId;
-
-  if (!externalUserId) {
-    throw new Error('User not found');
-  }
-
+): Promise<ActionResponse> {
   try {
-    // 先に既存のメモのorderを1つずつ増やす
+    const { externalUserId } = await authorizeUser();
+    const title = formData.get('title') as string;
+
+    // First increment the order of all existing memos
     await prisma.memo.updateMany({
-      where: {
-        externalUserId: externalUserId,
-      },
+      where: { externalUserId },
       data: {
         order: {
           increment: 1,
@@ -44,93 +71,126 @@ export async function create(
       },
     });
 
-    // 新しいメモを作成（orderは0で一番上に表示）
-    await prisma.memo.create({
+    // Create new memo with order 0 to display at the top
+    const newMemo = await prisma.memo.create({
       data: {
-        title: formData.get('title') as string,
-        externalUserId: externalUserId,
-        order: 0, // 一番上に表示されるよう0を設定
+        title,
+        externalUserId,
+        order: 0,
       },
     });
 
     revalidatePath('/');
+
     return {
+      success: true,
       message: 'Memo created successfully',
+      data: newMemo,
     };
   } catch (error) {
     console.error('Error creating memo:', error);
     return {
-      message: 'Error creating memo',
+      success: false,
+      message: error instanceof Error ? error.message : 'Error creating memo',
     };
   }
 }
 
-export async function update(formData: FormData) {
-  const session = await auth();
-  const oldMemo = await findById(Number(formData.get('id')));
+export async function update(formData: FormData): Promise<ActionResponse> {
+  try {
+    const memoId = Number(formData.get('id'));
+    await validateMemoOwnership(memoId);
 
-  if (!oldMemo) {
-    throw new Error('Memo not found');
-  }
-  if (!session?.user) {
-    throw new Error('User not found');
-  }
-  if (oldMemo.externalUserId !== session?.user.externalUserId) {
-    throw new Error('You are not authorized to update this memo');
-  }
+    const title = formData.get('title') as string;
 
-  await prisma.memo.update({
-    where: {
-      id: Number(formData.get('id')),
-    },
-    data: {
-      title: (formData.get('title') as string) ?? '',
-      updatedAt: new Date(),
-    },
-  });
+    const updatedMemo = await prisma.memo.update({
+      where: { id: memoId },
+      data: {
+        title: title ?? '',
+        updatedAt: new Date(),
+      },
+    });
 
-  revalidatePath('/');
+    revalidatePath('/');
+
+    return {
+      success: true,
+      message: 'Memo updated successfully',
+      data: updatedMemo,
+    };
+  } catch (error) {
+    console.error('Error updating memo:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Error updating memo',
+    };
+  }
 }
 
-export async function deleteMemo(id: number) {
-  const session = await auth();
-  const oldMemo = await findById(id);
+export async function deleteMemo(id: number): Promise<ActionResponse> {
+  try {
+    await validateMemoOwnership(id);
 
-  if (!oldMemo) {
-    throw new Error('Memo not found');
-  }
-  if (!session?.user?.externalUserId) {
-    throw new Error('User not found');
-  }
-  if (oldMemo.externalUserId !== session?.user.externalUserId) {
-    throw new Error('You are not authorized to delete this memo');
-  }
+    await prisma.memo.delete({
+      where: { id },
+    });
 
-  await prisma.memo.delete({
-    where: {
-      id: id,
-    },
-  });
-  revalidatePath('/');
+    revalidatePath('/');
+
+    return {
+      success: true,
+      message: 'Memo deleted successfully',
+    };
+  } catch (error) {
+    console.error('Error deleting memo:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Error deleting memo',
+    };
+  }
 }
 
-// New action to update memo order
-export async function updateMemoOrder(items: { id: number; order: number }[]) {
-  const session = await auth();
+export async function updateMemoOrder(
+  items: { id: number; order: number }[]
+): Promise<ActionResponse> {
+  try {
+    const { externalUserId } = await authorizeUser();
 
-  if (!session?.user?.externalUserId) {
-    throw new Error('User not found');
+    // Verify all memos belong to the current user
+    const memoIds = items.map((item) => item.id);
+    const memosCount = await prisma.memo.count({
+      where: {
+        id: { in: memoIds },
+        externalUserId,
+      },
+    });
+
+    if (memosCount !== memoIds.length) {
+      throw new Error('One or more memos do not belong to the current user');
+    }
+
+    // Use transaction for bulk update
+    await prisma.$transaction(
+      items.map((item) =>
+        prisma.memo.update({
+          where: { id: item.id },
+          data: { order: item.order },
+        })
+      )
+    );
+
+    revalidatePath('/');
+
+    return {
+      success: true,
+      message: 'Memo order updated successfully',
+    };
+  } catch (error) {
+    console.error('Error updating memo order:', error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : 'Error updating memo order',
+    };
   }
-
-  // トランザクションを使用して一括更新
-  await prisma.$transaction(
-    items.map((item) =>
-      prisma.memo.update({
-        where: { id: item.id },
-        data: { order: item.order },
-      })
-    )
-  );
-
-  revalidatePath('/');
 }
