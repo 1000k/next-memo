@@ -1,10 +1,10 @@
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import UserAvatar from '@/app/components/UserAvatar';
-import { SignOut } from '@/app/components/signout-button';
-import MemoList from '@/app/components/MemoList';
-import MemoAdd from '@/app/components/MemoAdd';
+import UserAvatar from '@/components/UserAvatar';
+import { SignOut } from '@/components/signout-button';
+import MemoList from '@/components/MemoList';
+import MemoAdd from '@/components/MemoAdd';
 
 export default async function Home() {
   const session = await auth();
