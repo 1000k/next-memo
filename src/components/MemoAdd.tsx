@@ -43,7 +43,7 @@ export default function MemoAdd() {
     <form
       ref={formRef}
       action={formAction}
-      className="flex w-2/3 items-center"
+      className="flex w-full items-center"
     >
       <input
         id="title"

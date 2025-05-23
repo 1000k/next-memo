@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/auth';
+import { auth, signOut } from '@/auth';
 import { revalidatePath } from 'next/cache';
 
 // Extend the User type to include externalUserId
@@ -193,4 +193,11 @@ export async function updateMemoOrder(
         error instanceof Error ? error.message : 'Error updating memo order',
     };
   }
+}
+
+export async function handleSignOut() {
+  await signOut({
+    redirectTo: '/login',
+  });
+  revalidatePath('/login');
 }
