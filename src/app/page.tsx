@@ -25,7 +25,7 @@ export default async function Home() {
     <div className="md:container md:max-w-screen-md p-4 mx-auto">
       <header className="flex items-center justify-between mb-4 gap-4">
         <MemoAdd />
-        <UserAvatar image={session?.user?.image} />
+        <UserAvatar image={session?.user?.image ?? undefined} />
       </header>
       <MemoList memos={memos} />
     </div>
